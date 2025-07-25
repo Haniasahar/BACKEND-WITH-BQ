@@ -29,7 +29,7 @@ A hands-on collection of backend fundamentals:
 ## ⚡ **Quick Start**
 ```bash
 # Clone the repo
-git clone https://github.com/Haniasahar/repo.git
+git clone https://github.com/Haniasahar/BACKEND_WITH_BQ.git
 
 # Install dependencies
 npm install
