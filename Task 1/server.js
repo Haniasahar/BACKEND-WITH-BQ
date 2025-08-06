@@ -1,3 +1,13 @@
+// Task 1: Build a Simple To-Do List API
+// Objective: Understand the CRUD operations (Create, Read, Update, Delete) using HTTP methods.
+// Description: Create a basic To-Do list API where users can:
+// GET a list of all tasks.
+// GET a specific task by ID.
+// POST a new task to the list (task should have a title, description, and a flag to mark it as completed).
+// PUT to update the entire task (title, description, completed).
+// PATCH to update only the status (mark as completed or not).
+// DELETE a specific task by ID.
+
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();

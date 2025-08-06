@@ -1,3 +1,12 @@
+// Task 2: User Registration System (Day 3)
+// Objective: Work with POST requests and store user data in a .json file.
+// Description:
+//  Create a simple API where users can register with their name, email, and password.
+// POST a new user.
+// GET all registered users (without passwords exposed).
+// GET a specific user by email (avoid exposing the password).
+// DELETE a user by email.
+
 import express from "express";
 import fs from "fs";
 import dotenv from "dotenv";

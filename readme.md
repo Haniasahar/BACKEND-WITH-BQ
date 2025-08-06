@@ -36,3 +36,5 @@ npm install
 
 # Launch development server
 npm start
+
+ task4 (combining the functionalities of task 1,2,3)
