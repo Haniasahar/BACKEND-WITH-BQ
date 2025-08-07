@@ -38,3 +38,6 @@ npm install
 npm start
 
  task4 (combining the functionalities of task 1,2,3)
+ 
+#display list pf all products
+#user can select multiple products and order(prod id and total)
