@@ -1,14 +1,12 @@
-// Task 4: Search and Filter Functionality (Day 5)
-// Objective: Learn how to filter and search data.
+// Connect Students with Subjects (Embed or Reference)
 // Description:
-//  Extend the Book Store API by adding search and filter functionality:
-// GET books by author (filter by query parameters).
-// GET books within a certain price range (filter by query parameters).
-// GET books by genre (filter by query parameters).
+//  Store subjects for each student (like "Math", "Science", "English").
+// Each student should have a subjects array.
+// Add API to add or remove a subject.
+// Allow fetching students filtered by subject:
+//  GET /students?subject=Math
 
 import express from "express";
-import dotenv from "dotenv";
-dotenv.config();
 import fs from "fs";
 
 const app = express();
@@ -18,88 +16,87 @@ app.get("/", (req, res) => {
   res.send("Hellooooooo World!");
 });
 
-app.get("/books/genre/:genre", (req, res) => {
-  const { genre } = req.params;
-
-  fs.readFile("./books.json", "utf8", (err, data) => {
+app.get('/students', (req, res) => {
+  fs.readFile('./students.json', 'utf8', (err, data) => {
     if (err) {
-      res.status(500).send("Internal Server Error, Books not found");
+      return res.status(500).send('Error reading student data');
     }
-
-    const books = JSON.parse(data);
-    const filteredBooks = books.filter(
-      (book) => book.genre.toLowerCase() === genre.toLowerCase()
-    );
-    res.json(filteredBooks);
+    res.json(JSON.parse(data));
   });
 });
 
-// app.get("/books/author/:author", (req, res) => {
-//   const { author } = req.params;
-
-//   fs.readFile("./books.json", "utf8", (err, data) => {
-//     if (err) {
-//       res.status(500).send("Internal Server Error, Books not found");
-//     }
-//     const books = JSON.parse(data);
-//     const filteredBooks = books.filter(
-//       (book) => book.author.toLowerCase() === author.toLowerCase()
-//     );
-//     res.json(filteredBooks);
-//   });
-// });
-
-app.get("/books", (req, res) => {
-  fs.readFile("./books.json", "utf8", (err, data) => {
+app.get('/students/filter', (req, res) => {
+  const subject = req.query.subject; 
+  
+  fs.readFile('./students.json', 'utf8', (err, data) => {
     if (err) {
-      return res.status(500).send("Internal Server Error, Books not found");
+      return res.status(500).send('Error reading student data');
     }
-
-    const books = JSON.parse(data);
-    let filteredBooks= [...books];
-    // if (req.query.genre) {
-    //   filteredBooks = books.filter(
-    //     (book) => book.genre.toLowerCase() === req.query.genre.toLowerCase()
-    //   );
-    // }
-
-    // if (req.query.author) {
-    //   filteredBooks = books.filter(
-    //     (book) => book.author.includes(req.query.author.toLowerCase())
-    //   );
-
-      if (req.query.author) {
-    const searchName = req.query.author.toLowerCase();
-    result = result.filter(book => 
-      book.author.toLowerCase().includes(searchName)
+    
+    const students = JSON.parse(data);
+    const filteredStudents = students.filter(student => 
+      student.subjects.some((sub)=>sub.toLowerCase().includes(subject.toLowerCase()))
     );
-  }
-      
-    else {
-      filteredBooks = books;
-    }
-    res.json(filteredBooks);
+    
+    res.json(filteredStudents);
   });
 });
 
-app.get("/books/price", (req, res) => {
-  const min = parseFloat(req.query.min) || 8;
-  const max = parseFloat(req.query.max) || 12;
+// Add a subject to a specific student
+app.put('/students/:id/add-subject', express.json(), (req, res) => {
+  const studentId = parseInt(req.params.id);
+  const { subject } = req.body;
 
-  fs.readFile("./books.json", "utf8", (err, data) => {
-    if (err) {
-      return res.status(500).send("Internal Server Error, Books not found");
+  fs.readFile('./students.json', 'utf8', (err, data) => {
+    if (err) return res.status(500).send('Error reading data');
+
+    const students = JSON.parse(data);
+    const student = students.find(s => s.id === studentId);
+    
+    if (!student) return res.status(404).send('Student not found');
+    if (student.subjects.includes(subject)) {
+      return res.status(400).send('Subject already exists');
     }
-    const books = JSON.parse(data);
-    const filteredBooks = books.filter(
-      (book) => book.price >= min && book.price <= max
-    );
-    res.json(filteredBooks);
+
+    student.subjects.push(subject);
+    
+    fs.writeFile('./students.json', JSON.stringify(students, null, 2), (err) => {
+      if (err) return res.status(500).send('Error saving data');
+      res.json(student);
+    });
   });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port http://localhost:${process.env.PORT}`);
+// Remove a subject from a student
+app.put('/students/:id/remove-subject', express.json(), (req, res) => {
+  const studentId = parseInt(req.params.id);
+  const { subject } = req.body;
+
+  fs.readFile('./students.json', 'utf8', (err, data) => {
+    if (err) return res.status(500).send('Error reading data');
+
+    const students = JSON.parse(data);
+    const student = students.find(s => s.id === studentId);
+    
+    if (!student) return res.status(404).send('Student not found');
+    
+    const subjectIndex = student.subjects.indexOf(subject);
+    if (subjectIndex === -1) {
+      return res.status(400).send('Subject not found');
+    }
+
+    student.subjects.splice(subjectIndex, 1);
+    
+    fs.writeFile('./students.json', JSON.stringify(students, null, 2), (err) => {
+      if (err) return res.status(500).send('Error saving data');
+      res.json(student);
+    });
+  });
+});
+
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port http://localhost:${PORT}`);
 });
 
 export default app;

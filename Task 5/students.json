@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Ali Khan",
+    "grade": "10th",
+    "subjects": ["Math", "Science", "English", "Urdu"]
+  },
+  {
+    "id": 2,
+    "name": "Sana Ahmed",
+    "grade": "9th",
+    "subjects": ["Math", "Urdu", "Islamiat"]
+  },
+  {
+    "id": 3,
+    "name": "Usman Malik",
+    "grade": "11th",
+    "subjects": ["Physics", "Chemistry", "English"]
+  }
+]

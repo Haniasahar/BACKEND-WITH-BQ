@@ -28,62 +28,44 @@ app.get("/books/genre/:genre", (req, res) => {
 
     const books = JSON.parse(data);
     const filteredBooks = books.filter(
-      (book) => book.genre.toLowerCase() === genre.toLowerCase()
+      (book) => book.genre.toLowerCase() == genre.toLowerCase()
     );
     res.json(filteredBooks);
   });
 });
 
-// app.get("/books/author/:author", (req, res) => {
-//   const { author } = req.params;
+app.get("/books/author/:author", (req, res) => {
+  const { author } = req.params;
 
-//   fs.readFile("./books.json", "utf8", (err, data) => {
-//     if (err) {
-//       res.status(500).send("Internal Server Error, Books not found");
-//     }
-//     const books = JSON.parse(data);
-//     const filteredBooks = books.filter(
-//       (book) => book.author.toLowerCase() === author.toLowerCase()
-//     );
-//     res.json(filteredBooks);
-//   });
-// });
-
-app.get("/books", (req, res) => {
   fs.readFile("./books.json", "utf8", (err, data) => {
     if (err) {
-      return res.status(500).send("Internal Server Error, Books not found");
+      res.status(500).send("Internal Server Error, Books not found");
     }
-
     const books = JSON.parse(data);
-    let filteredBooks= [...books];
-    // if (req.query.genre) {
-    //   filteredBooks = books.filter(
-    //     (book) => book.genre.toLowerCase() === req.query.genre.toLowerCase()
-    //   );
-    // }
-
-    // if (req.query.author) {
-    //   filteredBooks = books.filter(
-    //     (book) => book.author.includes(req.query.author.toLowerCase())
-    //   );
-
-      if (req.query.author) {
-    const searchName = req.query.author.toLowerCase();
-    result = result.filter(book => 
-      book.author.toLowerCase().includes(searchName)
+    const filteredBooks = books.filter(
+      (book) => book.author.toLowerCase().includes(author)
     );
-  }
-      
-    else {
-      filteredBooks = books;
+    res.json(filteredBooks);
+  });
+});
+
+app.get("/books/available/:available", (req, res) => {
+  const { available } = req.params;
+
+  fs.readFile("./books.json", "utf8", (err, data) => {
+    if (err) {
+      res.status(500).send("Internal Server Error, Books not found");
     }
+    const books = JSON.parse(data);
+    const filteredBooks = books.filter(
+      (book) => book.available === available.toLowerCase()
+    );
     res.json(filteredBooks);
   });
 });
 
 app.get("/books/price", (req, res) => {
-  const min = parseFloat(req.query.min) || 8;
+  const min = parseFloat(req.query.min) || 10;
   const max = parseFloat(req.query.max) || 12;
 
   fs.readFile("./books.json", "utf8", (err, data) => {
@@ -98,8 +80,25 @@ app.get("/books/price", (req, res) => {
   });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port http://localhost:${process.env.PORT}`);
+app.get("/books/price&available", (req, res) => {
+  const min = parseFloat(req.query.min) || 8;
+  const max = parseFloat(req.query.max) || 12;
+
+  fs.readFile("./books.json", "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).send("Internal Server Error, Books not found");
+    }
+    const books = JSON.parse(data);
+    const filteredBooks = books.filter(
+      (book) => book.price >= min && book.price <= max && book.available === "true"
+    );
+    res.json(filteredBooks);
+  });
+});
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port http://localhost:${PORT}`);
 });
 
 export default app;

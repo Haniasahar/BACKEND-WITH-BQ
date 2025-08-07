@@ -77,11 +77,11 @@ const loginUser = async (req, res) => {
     }
 
     const user = await User.findOne({
-        $or: [{ email }, { userName }],
+      $or: [{ email }],
     });
 
     if (!user) {
-      return res.status(401).json({ message: "Users not found" });
+      return res.status(401).json({ message: "User not found" });
     }
 
     const isPasswordValid = await user.isPasswordCorrect(password);
